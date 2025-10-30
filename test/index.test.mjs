@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 
 import { Player } from "../src/entities/Player.js";
 import { Ghost } from "../src/entities/Ghost.js";
@@ -196,4 +197,10 @@ test("Renderer wrapper tracks theme changes", () => {
   themeManager.setTheme("modern");
   renderer.setTheme(themeManager.theme, mazeManager.maze);
   assert.equal(renderer.theme.id, "modern");
+});
+
+test("index exposes Save HTML control", async () => {
+  const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+  assert.match(html, /id="save-html"/);
+  assert.match(html, /saveButton\.addEventListener\('click'/);
 });

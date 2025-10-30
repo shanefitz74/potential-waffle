@@ -65,7 +65,8 @@
       letter-spacing: 1px;
     }
 
-    .hud select {
+    .hud select,
+    .hud button {
       background: rgba(10, 18, 46, 0.85);
       color: #f0f7ff;
       border: 1px solid rgba(79, 196, 255, 0.45);
@@ -73,7 +74,23 @@
       padding: 6px 10px;
       font-size: 0.95rem;
       cursor: pointer;
-      transition: border 0.2s ease;
+      transition: border 0.2s ease, background 0.2s ease;
+    }
+
+    .hud button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .hud select:hover,
+    .hud button:hover,
+    .hud select:focus,
+    .hud button:focus {
+      border-color: rgba(135, 206, 255, 0.85);
+      outline: none;
     }
 
     body[data-mode="classic"] .hud {
@@ -81,7 +98,8 @@
       box-shadow: 0 0 15px rgba(255, 216, 0, 0.35);
     }
 
-    body[data-mode="classic"] .hud select {
+    body[data-mode="classic"] .hud select,
+    body[data-mode="classic"] .hud button {
       background: rgba(22, 22, 22, 0.85);
       border-color: rgba(255, 216, 0, 0.55);
       color: #ffe58d;
@@ -144,6 +162,7 @@
     </select>
     <span>Score: <strong id="score">0</strong></span>
     <span>Lives: <strong id="lives">3</strong></span>
+    <button id="save-html" type="button" aria-label="Download the current game HTML">Save HTML</button>
   </div>
   <canvas id="game" width="704" height="576" aria-label="Byte navigating a neon maze"></canvas>
   <div id="status" class="status"></div>
@@ -185,6 +204,7 @@
     const livesEl = document.getElementById('lives');
     const statusEl = document.getElementById('status');
     const modeSelect = document.getElementById('mode-select');
+    const saveButton = document.getElementById('save-html');
 
     const DIRECTIONS = {
       ArrowUp: { x: 0, y: -1 },
@@ -1022,6 +1042,23 @@
     modeSelect.addEventListener('change', () => {
       initGame(modeSelect.value);
     });
+
+    if (saveButton) {
+      saveButton.addEventListener('click', () => {
+        const docType = '<!DOCTYPE html>\n';
+        const html = document.documentElement.outerHTML;
+        const blob = new Blob([docType, html], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const download = document.createElement('a');
+        const mode = document.body.dataset.mode || currentMode;
+        download.href = url;
+        download.download = `byte-vs-glitches-${mode}.html`;
+        document.body.appendChild(download);
+        download.click();
+        download.remove();
+        URL.revokeObjectURL(url);
+      });
+    }
 
     window.addEventListener('keydown', (event) => {
       if (DIRECTIONS[event.key]) {
