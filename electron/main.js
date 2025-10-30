@@ -1,7 +1,11 @@
-const { app, BrowserWindow } = require('electron');
-const { join } = require('node:path');
-const { existsSync } = require('node:fs');
-const { autoUpdater } = require('electron-updater');
+import { app, BrowserWindow } from 'electron';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { existsSync } from 'node:fs';
+import { autoUpdater } from 'electron-updater';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 let mainWindow;
 
