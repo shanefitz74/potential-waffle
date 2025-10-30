@@ -1,0 +1,28 @@
+{
+  "id": "haunted",
+  "label": "Haunted Echoes",
+  "player": {
+    "variant": "modern",
+    "trail": true
+  },
+  "enemies": [
+    { "type": "glitch", "name": "blinky", "kind": "static", "scatterTarget": { "col": 25, "row": 1 } },
+    { "type": "glitch", "name": "pinky", "kind": "neon", "scatterTarget": { "col": 2, "row": 1 } },
+    { "type": "glitch", "name": "inky", "kind": "crystal", "scatterTarget": { "col": 25, "row": 30 } },
+    { "type": "glitch", "name": "clyde", "kind": "inferno", "scatterTarget": { "col": 2, "row": 30 } }
+  ],
+  "walls": {
+    "fill": "#111019",
+    "stroke": "#8a2be2",
+    "glow": "rgba(138, 43, 226, 0.8)"
+  },
+  "collectibles": {
+    "pellet": { "type": "energy", "color": "#ffd86b" },
+    "power": { "type": "core", "color": "#f0a0ff" }
+  },
+  "hud": {
+    "background": "#111019",
+    "text": "#ffccff",
+    "accent": "#8a2be2"
+  }
+}

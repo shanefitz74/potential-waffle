@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Byte vs. The Glitches</title>
+  <style>
+    :root {
+      --bg-classic: #000;
+      --bg-modern: radial-gradient(circle at center, #061a3a 0%, #020411 100%);
+      --hud-font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      --hud-color: #f8f8f8;
+      --neon-blue: #24c6ff;
+      --trail-blue: rgba(79, 196, 255, 0.4);
+      --node-gold: #f4d35e;
+      --power-core: #78ffd6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      background: var(--bg-modern);
+      color: var(--hud-color);
+      font-family: var(--hud-font);
+      transition: background 0.6s ease;
+    }
+
+    body[data-mode="classic"] {
+      background: var(--bg-classic);
+      color: #fff6b0;
+    }
+
+    h1 {
+      margin: 24px 0 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .hud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 20px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 0 15px rgba(36, 198, 255, 0.35);
+    }
+
+    .hud label {
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+    }
+
+    .hud select,
+    .hud button {
+      background: rgba(10, 18, 46, 0.85);
+      color: #f0f7ff;
+      border: 1px solid rgba(79, 196, 255, 0.45);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: border 0.2s ease, background 0.2s ease;
+    }
+
+    .hud button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .hud select:hover,
+    .hud button:hover,
+    .hud select:focus,
+    .hud button:focus {
+      border-color: rgba(135, 206, 255, 0.85);
+      outline: none;
+    }
+
+    body[data-mode="classic"] .hud {
+      background: rgba(25, 25, 25, 0.65);
+      box-shadow: 0 0 15px rgba(255, 216, 0, 0.35);
+    }
+
+    body[data-mode="classic"] .hud select,
+    body[data-mode="classic"] .hud button {
+      background: rgba(22, 22, 22, 0.85);
+      border-color: rgba(255, 216, 0, 0.55);
+      color: #ffe58d;
+    }
+
+    .hud span {
+      font-size: 1rem;
+      letter-spacing: 1px;
+    }
+
+    canvas {
+      margin: 24px auto 12px;
+      max-width: calc(100vw - 32px);
+      border-radius: 16px;
+      border: 4px solid rgba(79, 196, 255, 0.75);
+      background: #030712;
+      box-shadow: 0 0 30px rgba(36, 198, 255, 0.45);
+      image-rendering: pixelated;
+      transition: box-shadow 0.4s ease, border-color 0.4s ease;
+    }
+
+    body[data-mode="classic"] canvas {
+      border-color: rgba(255, 216, 0, 0.85);
+      box-shadow: 0 0 24px rgba(255, 216, 0, 0.35);
+      background: #000;
+    }
+
+    .status {
+      min-height: 32px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .legend {
+      max-width: 820px;
+      padding: 0 24px 32px;
+      opacity: 0.85;
+      line-height: 1.6;
+    }
+
+    .legend strong {
+      color: #8be9ff;
+    }
+
+    body[data-mode="classic"] .legend strong {
+      color: #ffd400;
+    }
+  </style>
+</head>
+<body>
+  <h1>Byte vs. The Glitches</h1>
+  <div class="hud">
+    <label for="mode-select">Mode</label>
+    <select id="mode-select">
+      <option value="modern">Modern Mode</option>
+      <option value="classic">Classic Mode</option>
+    </select>
+    <span>Score: <strong id="score">0</strong></span>
+    <span>Lives: <strong id="lives">3</strong></span>
+    <button id="save-html" type="button" aria-label="Download the current game HTML">Save HTML</button>
+  </div>
+  <canvas id="game" width="704" height="576" aria-label="Byte navigating a neon maze"></canvas>
+  <div id="status" class="status"></div>
+  <div class="legend">
+    <p><strong>Modern Mode:</strong> Guide Byte, a luminous data spirit, through neon tunnels. Gather Energy Nodes, overclock with radiant cores, and turn the Glitches vulnerable before they rewrite reality.</p>
+    <p><strong>Classic Mode:</strong> Relive a retro remix. Classic pellets, iconic colors, timeless tension.</p>
+  </div>
+    <script type="module" src="./src/main.js"></script>
+
+</body>
+</html>
