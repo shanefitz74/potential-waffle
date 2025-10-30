@@ -10,15 +10,14 @@
     "start": "node server.js",
     "electron:prep": "node scripts/prepare-electron.mjs",
     "electron:start": "npm run electron:prep && electron electron/main.js",
-    "electron:build": "npm run build && npm run electron:prep && electron-builder"
-  },
-  "devDependencies": {
-    "electron": "^27.0.0",
-    "electron-builder": "^24.6.4",
-    "esbuild": "^0.19.9"
+    "electron:build": "node scripts/electron-build.mjs"
   },
   "dependencies": {
     "electron-updater": "^6.1.1"
+  },
+  "optionalDependencies": {
+    "electron": "^27.0.0",
+    "electron-builder": "^24.6.4"
   },
   "build": {
     "appId": "com.yourname.pacmanredux",
