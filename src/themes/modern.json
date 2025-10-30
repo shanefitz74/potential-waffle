@@ -1,0 +1,28 @@
+{
+  "id": "modern",
+  "label": "Modern Byte",
+  "player": {
+    "variant": "modern",
+    "trail": true
+  },
+  "enemies": [
+    { "type": "glitch", "name": "static", "kind": "static", "scatterTarget": { "col": 25, "row": 1 } },
+    { "type": "glitch", "name": "neon", "kind": "neon", "scatterTarget": { "col": 2, "row": 1 } },
+    { "type": "glitch", "name": "crystal", "kind": "crystal", "scatterTarget": { "col": 25, "row": 30 } },
+    { "type": "glitch", "name": "inferno", "kind": "inferno", "scatterTarget": { "col": 2, "row": 30 } }
+  ],
+  "walls": {
+    "fill": "#030512",
+    "stroke": "#0ff3ff",
+    "glow": "rgba(0, 255, 255, 0.75)"
+  },
+  "collectibles": {
+    "pellet": { "type": "energy", "color": "#ffe58a" },
+    "power": { "type": "core", "color": "#8defff" }
+  },
+  "hud": {
+    "background": "#040811",
+    "text": "#d5f9ff",
+    "accent": "#0ff3ff"
+  }
+}
