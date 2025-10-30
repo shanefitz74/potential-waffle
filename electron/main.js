@@ -1,11 +1,11 @@
 import { app, BrowserWindow } from 'electron';
-import { dirname, join } from 'node:path';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { existsSync } from 'node:fs';
 import { autoUpdater } from 'electron-updater';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = path.dirname(__filename);
 
 let mainWindow;
 
@@ -16,12 +16,12 @@ autoUpdater.on('update-downloaded', () => {
 });
 
 function resolveEntryPath() {
-  const projectRoot = join(__dirname, '..');
-  const distIndex = join(projectRoot, 'dist', 'index.html');
+  const projectRoot = path.join(__dirname, '..');
+  const distIndex = path.join(projectRoot, 'dist', 'index.html');
   if (existsSync(distIndex)) {
     return distIndex;
   }
-  return join(projectRoot, 'index.html');
+  return path.join(projectRoot, 'index.html');
 }
 
 function createWindow() {
@@ -31,12 +31,12 @@ function createWindow() {
     minWidth: 640,
     minHeight: 720,
     webPreferences: {
-      preload: join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
     },
-    icon: join(__dirname, 'resources', 'icon-256.png'),
+    icon: path.join(__dirname, '../assets/images/icon.png'),
   });
 
   const entryPath = resolveEntryPath();
