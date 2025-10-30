@@ -1,11 +1,13 @@
 import http from 'http';
-import { promises as fs } from 'fs';
+import { promises as fs, existsSync } from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL, URL } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname);
+const distDir = path.join(rootDir, 'dist');
+const publicDir = existsSync(distDir) ? distDir : rootDir;
 
 const mimeTypes = {
   '.html': 'text/html; charset=utf-8',
@@ -72,9 +74,9 @@ export function createPacmanServer() {
       relativePath = 'index.html';
     }
 
-    const resolvedPath = path.resolve(rootDir, relativePath);
+    const resolvedPath = path.resolve(publicDir, relativePath);
 
-    if (!resolvedPath.startsWith(rootDir)) {
+    if (!resolvedPath.startsWith(publicDir)) {
       res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
       res.end('Forbidden');
       return;

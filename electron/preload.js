@@ -1,5 +1,12 @@
-import { contextBridge } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  // Placeholder for future, intentionally empty for now.
+  onReset(callback) {
+    if (typeof callback !== 'function') return;
+    ipcRenderer.on('reset', () => callback());
+  },
+  onUpdateReady(callback) {
+    if (typeof callback !== 'function') return;
+    ipcRenderer.on('update-downloaded', () => callback());
+  },
 });

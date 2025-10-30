@@ -36,6 +36,7 @@ const powerToggle = document.getElementById("powerups-toggle");
 const ghostAiSelect = document.getElementById("ghost-ai-select");
 const touchControls = document.getElementById("touch-controls");
 const downloadBtn = document.getElementById("download-replay");
+const saveHtmlBtn = document.getElementById("save-html");
 const audioToggle = document.getElementById("audio-toggle");
 const audioVolume = document.getElementById("audio-volume");
 const memoryOverlay = document.getElementById("memory-overlay");
@@ -466,6 +467,21 @@ downloadBtn?.addEventListener("click", () => {
   URL.revokeObjectURL(url);
 });
 
+saveHtmlBtn?.addEventListener("click", () => {
+  const docType = "<!DOCTYPE html>\n";
+  const html = document.documentElement?.outerHTML ?? "";
+  const blob = new Blob([docType, html], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const activeMode = document.body?.dataset?.mode ?? themeManager.theme?.id ?? "modern";
+  a.href = url;
+  a.download = `byte-vs-glitches-${activeMode}.html`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
 let lastTime = performance.now();
 
 function frame(now) {
@@ -482,6 +498,10 @@ requestAnimationFrame(frame);
 
 window.electronAPI?.onReset(() => {
   game.resetGame();
+});
+
+window.electronAPI?.onUpdateReady?.(() => {
+  console.info("A new update is ready to install.");
 });
 
 window.pacDebug = {

@@ -11,6 +11,7 @@ import { createEventBus } from "../src/eventBus.js";
 import { createRenderer } from "../src/renderer.js";
 import { createThemeManager } from "../src/themes/index.js";
 import { TILE_SIZE, COLS, ROWS } from "../src/constants.js";
+import { clampTile } from "../src/utils.js";
 
 function pickPellet(maze) {
   const iterator = maze.pelletSet.values();
@@ -123,6 +124,33 @@ function createMockCanvas() {
   return { canvas, ctx, calls };
 }
 
+test("Player advances when direction input is applied", () => {
+  const maze = createMazeManager().maze;
+  const player = new Player(maze);
+  const startX = player.x;
+  player.setDirection({ x: 1, y: 0 });
+  player.update(120, {});
+  assert.ok(player.x > startX, "player should move to the right when direction is set");
+});
+
+test("Ghost Pinky targets tiles ahead of the player", () => {
+  const maze = createMazeManager().maze;
+  const player = new Player(maze);
+  player.setDirection({ x: 1, y: 0 });
+  const pinky = new Ghost(maze, { name: "pinky" });
+  pinky.setMode("chase");
+  const target = pinky.getTargetTile(player, [pinky]);
+  assert.equal(target.col, clampTile(player.col + 4, 27));
+});
+
+test("Maze version increments when pellets are eaten", () => {
+  const maze = createMazeManager().maze;
+  const initial = maze.version;
+  const pellet = pickPellet(maze);
+  maze.consume(pellet.col, pellet.row);
+  assert.ok(maze.version > initial);
+});
+
 test("Player consumes pellets and notifies hooks", () => {
   const maze = createMazeManager().maze;
   const pelletTile = pickPellet(maze);
@@ -163,9 +191,12 @@ test("Modern renderer draws glowing collectibles", async () => {
     maze,
     theme,
   );
+  calls.length = 0;
   modernRenderer.draw({ player, enemies: [glitch], fruit: null }, 16);
   const arcCalls = calls.filter(([name]) => name === "arc");
-  assert.ok(arcCalls.length > 0, "expected energy node arcs to be drawn");
+  assert.ok(arcCalls.length > 0, "expected collectible arcs to be drawn");
+  const drawImageCalls = calls.filter(([name]) => name === "drawImage");
+  assert.ok(drawImageCalls.length >= 1, "offscreen layers should be blitted with drawImage");
   const gcoCalls = calls.filter(([name, value]) => name === "gco" && value === "lighter");
   assert.ok(gcoCalls.length > 0, "glow composite operation should be used");
 });
@@ -202,5 +233,5 @@ test("Renderer wrapper tracks theme changes", () => {
 test("index exposes Save HTML control", async () => {
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
   assert.match(html, /id="save-html"/);
-  assert.match(html, /saveButton\.addEventListener\('click'/);
+  assert.match(html, /<script type="module" src="\.\/src\/main\.js"><\/script>/);
 });

@@ -71,7 +71,9 @@ export class ClassicRenderer {
     this.theme = theme;
     this.time = 0;
     this.wallLayer = null;
-    this.#buildWallLayer();
+    this.collectibleLayer = null;
+    this.collectibleVersion = -1;
+    this.#buildLayers();
   }
 
   setTheme(theme, maze) {
@@ -79,7 +81,7 @@ export class ClassicRenderer {
     if (maze) {
       this.maze = maze;
     }
-    this.#buildWallLayer();
+    this.#buildLayers();
   }
 
   #buildWallLayer() {
@@ -102,9 +104,27 @@ export class ClassicRenderer {
     this.wallLayer = buffer;
   }
 
+  #buildCollectibleLayer() {
+    if (!this.maze) return;
+    const buffer = createBufferCanvas(this.canvas);
+    buffer.width = this.canvas.width;
+    buffer.height = this.canvas.height;
+    const ctx = buffer.getContext("2d");
+    drawPellets(ctx, this.maze, this.theme);
+    this.collectibleLayer = buffer;
+    this.collectibleVersion = this.maze.version ?? 0;
+  }
+
+  #buildLayers() {
+    this.#buildWallLayer();
+    this.collectibleLayer = null;
+    this.collectibleVersion = -1;
+    this.#buildCollectibleLayer();
+  }
+
   resize(maze) {
     if (maze) this.maze = maze;
-    this.#buildWallLayer();
+    this.#buildLayers();
   }
 
   draw(state, delta) {
@@ -115,7 +135,12 @@ export class ClassicRenderer {
     if (this.wallLayer) {
       ctx.drawImage(this.wallLayer, 0, 0);
     }
-    drawPellets(ctx, this.maze, this.theme);
+    if ((this.maze.version ?? 0) !== this.collectibleVersion) {
+      this.#buildCollectibleLayer();
+    }
+    if (this.collectibleLayer) {
+      ctx.drawImage(this.collectibleLayer, 0, 0);
+    }
     enemies.forEach((ghost) => drawGhost(ctx, ghost, ghost.frightened));
     if (player) drawPac(ctx, player);
     if (fruit?.visible) {

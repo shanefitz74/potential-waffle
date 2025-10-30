@@ -8,38 +8,6 @@ import {
   drawMazeModern,
 } from "./helpers.js";
 
-function drawCollectibles(ctx, maze, theme, time) {
-  const pelletType = theme.collectibles?.pellet?.type ?? "energy";
-  maze.pelletSet.forEach((index) => {
-    const col = index % COLS;
-    const row = Math.floor(index / COLS);
-    const { x, y } = maze.tileCenter(col, row);
-    if (pelletType === "dot") {
-      ctx.fillStyle = theme.collectibles?.pellet?.color ?? "#ffe58a";
-      ctx.beginPath();
-      ctx.arc(x, y, TILE_SIZE * 0.16, 0, Math.PI * 2);
-      ctx.fill();
-    } else {
-      drawEnergyNode(ctx, x, y);
-    }
-  });
-
-  const powerType = theme.collectibles?.power?.type ?? "core";
-  maze.powerPelletSet.forEach((index) => {
-    const col = index % COLS;
-    const row = Math.floor(index / COLS);
-    const { x, y } = maze.tileCenter(col, row);
-    if (powerType === "power") {
-      ctx.fillStyle = theme.collectibles?.power?.color ?? "#ffffff";
-      ctx.beginPath();
-      ctx.arc(x, y, TILE_SIZE * 0.28, 0, Math.PI * 2);
-      ctx.fill();
-    } else {
-      drawOverclockCore(ctx, x, y, time);
-    }
-  });
-}
-
 export class ModernRenderer {
   constructor(canvas, maze, theme) {
     this.canvas = canvas;
@@ -48,7 +16,9 @@ export class ModernRenderer {
     this.theme = theme;
     this.time = 0;
     this.wallLayer = null;
-    this.#buildWallLayer();
+    this.collectibleLayer = null;
+    this.collectibleVersion = -1;
+    this.#buildLayers();
   }
 
   setTheme(theme, maze) {
@@ -56,7 +26,7 @@ export class ModernRenderer {
     if (maze) {
       this.maze = maze;
     }
-    this.#buildWallLayer();
+    this.#buildLayers();
   }
 
   #buildWallLayer() {
@@ -69,9 +39,57 @@ export class ModernRenderer {
     this.wallLayer = buffer;
   }
 
+  #buildCollectibleLayer() {
+    if (!this.maze) return;
+    const buffer = createBufferCanvas(this.canvas);
+    buffer.width = this.canvas.width;
+    buffer.height = this.canvas.height;
+    const ctx = buffer.getContext("2d");
+    const pelletType = this.theme.collectibles?.pellet?.type ?? "energy";
+    this.maze.pelletSet.forEach((index) => {
+      const col = index % COLS;
+      const row = Math.floor(index / COLS);
+      const { x, y } = this.maze.tileCenter(col, row);
+      if (pelletType === "dot") {
+        ctx.fillStyle = this.theme.collectibles?.pellet?.color ?? "#ffe58a";
+        ctx.beginPath();
+        ctx.arc(x, y, TILE_SIZE * 0.16, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        drawEnergyNode(ctx, x, y);
+      }
+    });
+    this.collectibleLayer = buffer;
+    this.collectibleVersion = this.maze.version ?? 0;
+  }
+
+  #buildLayers() {
+    this.#buildWallLayer();
+    this.collectibleLayer = null;
+    this.collectibleVersion = -1;
+    this.#buildCollectibleLayer();
+  }
+
+  #drawPowerCores(ctx, time) {
+    const powerType = this.theme.collectibles?.power?.type ?? "core";
+    this.maze.powerPelletSet.forEach((index) => {
+      const col = index % COLS;
+      const row = Math.floor(index / COLS);
+      const { x, y } = this.maze.tileCenter(col, row);
+      if (powerType === "power") {
+        ctx.fillStyle = this.theme.collectibles?.power?.color ?? "#ffffff";
+        ctx.beginPath();
+        ctx.arc(x, y, TILE_SIZE * 0.28, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        drawOverclockCore(ctx, x, y, time);
+      }
+    });
+  }
+
   resize(maze) {
     if (maze) this.maze = maze;
-    this.#buildWallLayer();
+    this.#buildLayers();
   }
 
   draw(state, delta) {
@@ -82,7 +100,13 @@ export class ModernRenderer {
     if (this.wallLayer) {
       ctx.drawImage(this.wallLayer, 0, 0);
     }
-    drawCollectibles(ctx, this.maze, this.theme, this.time);
+    if ((this.maze.version ?? 0) !== this.collectibleVersion) {
+      this.#buildCollectibleLayer();
+    }
+    if (this.collectibleLayer) {
+      ctx.drawImage(this.collectibleLayer, 0, 0);
+    }
+    this.#drawPowerCores(ctx, this.time);
     enemies.forEach((enemy) => {
       drawGlitch(ctx, enemy.x, enemy.y, TILE_SIZE, enemy.kind ?? enemy.name, this.time);
     });

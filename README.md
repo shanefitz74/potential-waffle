@@ -37,6 +37,13 @@ A browser-based Pac-Man tribute with modular ES module architecture, multiple vi
       unsigned application the first time. On Windows you can right-click the installer and choose **Run as administrator** if UAC
       prompts appear.
 
+5. **Build production assets**
+   ```bash
+   npm run build
+   ```
+   The build script bundles the ES module graph with esbuild, emits the compiled output to `dist/`, and rewrites `index.html` to
+   point at the generated module. Both the static server and Electron wrapper automatically prefer `dist/` when it exists.
+
 ## Testing
 
 Run the Node-based suite that exercises gameplay logic, renderer integration, and the static file server:
@@ -57,7 +64,10 @@ npm test
 
 - Multiple visual themes (classic, neon, haunted) with palette-driven sprite variations and a HUD theme toggle.
 - HUD controls for muting or adjusting in-game audio without leaving the session.
+- PCM audio samples replace synthesized tones for pellets, power cores, ghost captures, and fruit rewards while preserving HUD
+  volume controls.
 - Adaptive difficulty scaling, fruit bonuses, ghost personality AI, and frightened-mode combo scoring.
 - Replay capture hooks, debug overlay, and responsive controls for desktop and mobile play.
 - Electron packaging support with headless test execution to verify the desktop entry point.
+- Offscreen canvas caching for maze walls and collectibles keeps rendering smooth, only redrawing layers when maze data changes.
 

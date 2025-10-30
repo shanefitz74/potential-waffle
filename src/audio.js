@@ -1,3 +1,5 @@
+import { SAMPLE_DATA } from "./audioSamples.js";
+
 function safeContext() {
   if (typeof window === "undefined") return null;
   const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -11,19 +13,38 @@ function clampVolume(value) {
   return Math.min(1, Math.max(0, numeric));
 }
 
-function playOsc(context, destination, frequency, duration, type = "sine") {
-  if (!context || !destination) return;
-  const osc = context.createOscillator();
-  const gain = context.createGain();
-  osc.type = type;
-  osc.frequency.value = frequency;
-  gain.gain.setValueAtTime(0.0001, context.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.2, context.currentTime + 0.01);
-  gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + duration);
-  osc.connect(gain).connect(destination);
-  osc.start();
-  osc.stop(context.currentTime + duration + 0.05);
+function decodeBase64Audio(base64) {
+  if (typeof base64 !== "string" || base64.length === 0) {
+    return null;
+  }
+  try {
+    if (typeof atob === "function") {
+      const binary = atob(base64);
+      const buffer = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i += 1) {
+        buffer[i] = binary.charCodeAt(i);
+      }
+      return buffer.buffer;
+    }
+  } catch (error) {
+    console.warn("Failed to decode audio sample", error);
+    return null;
+  }
+  try {
+    return Buffer.from(base64, "base64").buffer;
+  } catch (error) {
+    console.warn("Failed to decode audio sample in Node", error);
+    return null;
+  }
 }
+
+const SAMPLE_SETTINGS = {
+  pellet: { rate: 1.05 },
+  power: { rate: 0.95 },
+  ghost: { rate: 1 },
+  death: { rate: 0.92 },
+  fruit: { rate: 1.1 },
+};
 
 export function createAudioManager({ enabled = true, volume = 1 } = {}) {
   const context = safeContext();
@@ -31,7 +52,7 @@ export function createAudioManager({ enabled = true, volume = 1 } = {}) {
   const masterGain = context ? context.createGain() : null;
   let volumeLevel = clampVolume(volume);
   let active = Boolean(enabled) && supported;
-  let wakaToggle = false;
+  const bufferPromises = new Map();
 
   if (masterGain && context) {
     masterGain.gain.value = active ? volumeLevel : 0;
@@ -42,6 +63,57 @@ export function createAudioManager({ enabled = true, volume = 1 } = {}) {
     if (context?.state === "suspended") {
       context.resume();
     }
+  }
+
+  function ensureBuffer(name) {
+    if (!context) return null;
+    if (!bufferPromises.has(name)) {
+      const base64 = SAMPLE_DATA[name];
+      if (!base64) {
+        bufferPromises.set(name, Promise.resolve(null));
+      } else {
+        const decoded = decodeBase64Audio(base64);
+        if (!decoded) {
+          bufferPromises.set(name, Promise.resolve(null));
+        } else {
+          const promise = context
+            .decodeAudioData(decoded.slice(0))
+            .catch((error) => {
+              console.warn("Failed to decode audio buffer", name, error);
+              return null;
+            });
+          bufferPromises.set(name, promise);
+        }
+      }
+    }
+    return bufferPromises.get(name);
+  }
+
+  if (context) {
+    Object.keys(SAMPLE_DATA).forEach((key) => {
+      ensureBuffer(key);
+    });
+  }
+
+  function playSample(name) {
+    if (!active || !context || !masterGain) return;
+    ensureRunning();
+    const promise = ensureBuffer(name);
+    promise?.then((buffer) => {
+      if (!buffer || !active) return;
+      const source = context.createBufferSource();
+      source.buffer = buffer;
+      const options = SAMPLE_SETTINGS[name] ?? {};
+      if (options.rate) {
+        source.playbackRate.value = options.rate;
+      }
+      source.connect(masterGain);
+      try {
+        source.start();
+      } catch (error) {
+        console.warn("Failed to start audio source", name, error);
+      }
+    });
   }
 
   return {
@@ -67,34 +139,30 @@ export function createAudioManager({ enabled = true, volume = 1 } = {}) {
       return supported;
     },
     playPellet() {
-      if (!active) return;
-      ensureRunning();
-      wakaToggle = !wakaToggle;
-      const frequency = wakaToggle ? 420 : 380;
-      playOsc(context, masterGain, frequency, 0.08, "square");
+      playSample("pellet");
     },
     playPowerPellet() {
-      if (!active) return;
-      ensureRunning();
-      [320, 380, 420].forEach((freq) => {
-        playOsc(context, masterGain, freq, 0.12, "sawtooth");
-      });
+      playSample("power");
     },
     playGhostCapture(combo) {
-      if (!active) return;
-      ensureRunning();
-      const base = 200;
-      playOsc(context, masterGain, base + combo * 60, 0.2, "triangle");
+      const playbackRate = 1 + Math.min(combo ?? 0, 4) * 0.08;
+      if (context && masterGain && active) {
+        const promise = ensureBuffer("ghost");
+        promise?.then((buffer) => {
+          if (!buffer || !active) return;
+          const source = context.createBufferSource();
+          source.buffer = buffer;
+          source.playbackRate.value = playbackRate;
+          source.connect(masterGain);
+          source.start();
+        });
+      }
     },
     playDeath() {
-      if (!active) return;
-      ensureRunning();
-      playOsc(context, masterGain, 160, 0.6, "sawtooth");
+      playSample("death");
     },
     playFruit() {
-      if (!active) return;
-      ensureRunning();
-      playOsc(context, masterGain, 600, 0.2, "square");
+      playSample("fruit");
     },
   };
 }

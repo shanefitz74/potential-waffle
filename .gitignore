@@ -1,0 +1,3 @@
+dist/
+electron/resources/icon-*.png
+electron/resources/icon.png

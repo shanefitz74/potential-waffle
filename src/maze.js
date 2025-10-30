@@ -55,6 +55,7 @@ export function createMazeManager() {
       layout,
     );
     const tunnelRows = analyzeTunnelRows(layout);
+    let version = 0;
 
     function populate() {
       pelletSet.clear();
@@ -66,6 +67,7 @@ export function createMazeManager() {
       created.walls.forEach((value) => walls.add(value));
       fruitTiles.length = 0;
       created.fruitTiles.forEach((tile) => fruitTiles.push(tile));
+      version += 1;
     }
 
     populate();
@@ -78,6 +80,9 @@ export function createMazeManager() {
       walls,
       fruitTiles,
       tunnelRows,
+      get version() {
+        return version;
+      },
       reset: populate,
       isWall(col, row) {
         if (col < 0 || col >= COLS || row < 0 || row >= ROWS) {
@@ -87,8 +92,14 @@ export function createMazeManager() {
       },
       consume(col, row) {
         const index = mapIndex(col, row);
-        if (pelletSet.delete(index)) return "pellet";
-        if (powerPelletSet.delete(index)) return "power";
+        if (pelletSet.delete(index)) {
+          version += 1;
+          return "pellet";
+        }
+        if (powerPelletSet.delete(index)) {
+          version += 1;
+          return "power";
+        }
         return null;
       },
       pelletsRemaining() {
