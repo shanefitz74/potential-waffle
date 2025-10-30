@@ -1,0 +1,7 @@
+dist/
+release/
+electron/resources/icon-*.png
+electron/resources/icon.png
+artifacts/
+playwright-report/
+test-results/

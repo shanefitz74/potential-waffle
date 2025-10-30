@@ -1,0 +1,78 @@
+{
+  "name": "pacman-redux",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "main": "electron/main.js",
+  "scripts": {
+    "test": "npm run test:unit",
+    "test:unit": "node --test test/index.test.mjs",
+    "test:playwright": "node scripts/run-playwright.mjs",
+    "build": "node scripts/build.mjs",
+    "start": "node server.js",
+    "electron:prep": "node scripts/prepare-electron.mjs",
+    "electron:start": "npm run electron:prep && electron electron/main.js",
+    "electron:build": "node scripts/electron-build.mjs",
+    "electron:smoke": "node scripts/electron-smoke.mjs"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@playwright/test": "^1.40.0"
+  },
+  "optionalDependencies": {
+    "electron": "^27.0.0",
+    "electron-builder": "^24.6.4",
+    "electron-updater": "^6.1.1"
+  },
+  "build": {
+    "appId": "com.yourname.pacmanredux",
+    "productName": "Pac-Man Redux",
+    "directories": {
+      "output": "release",
+      "buildResources": "electron/resources"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*"
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "yourname",
+        "repo": "pacman-redux",
+        "releaseType": "draft"
+      }
+    ],
+    "mac": {
+      "icon": "electron/resources/icon.png",
+      "hardenedRuntime": true,
+      "entitlements": "electron/entitlements.mac.plist",
+      "entitlementsInherit": "electron/entitlements.mac.plist",
+      "target": [
+        "dmg"
+      ],
+      "notarize": {
+        "teamId": "${env.APPLE_TEAM_ID}"
+      }
+    },
+    "win": {
+      "icon": "electron/resources/icon.png",
+      "publisherName": "Your Name",
+      "certificateSubjectName": "${env.WINDOWS_CERT_SUBJECT}",
+      "target": [
+        "nsis"
+      ]
+    },
+    "linux": {
+      "icon": "electron/resources/icon.png",
+      "category": "Game",
+      "target": [
+        "AppImage"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
