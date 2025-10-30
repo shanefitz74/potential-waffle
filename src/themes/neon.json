@@ -1,0 +1,28 @@
+{
+  "id": "neon",
+  "label": "Neon Grid",
+  "player": {
+    "variant": "classic",
+    "trail": false
+  },
+  "enemies": [
+    { "type": "ghost", "name": "blinky", "color": "#ff3366", "scatterTarget": { "col": 25, "row": 1 } },
+    { "type": "ghost", "name": "pinky", "color": "#ff88ff", "scatterTarget": { "col": 2, "row": 1 } },
+    { "type": "ghost", "name": "inky", "color": "#44ffff", "scatterTarget": { "col": 25, "row": 30 } },
+    { "type": "ghost", "name": "clyde", "color": "#ffaa33", "scatterTarget": { "col": 2, "row": 30 } }
+  ],
+  "walls": {
+    "fill": "#020216",
+    "stroke": "#00f3ff",
+    "glow": "rgba(0, 243, 255, 0.8)"
+  },
+  "collectibles": {
+    "pellet": { "type": "dot", "color": "#99f6ff" },
+    "power": { "type": "power", "color": "#ffffff" }
+  },
+  "hud": {
+    "background": "#050018",
+    "text": "#c5f6ff",
+    "accent": "#00f3ff"
+  }
+}
