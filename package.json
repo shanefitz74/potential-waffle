@@ -12,12 +12,11 @@
     "electron:start": "npm run electron:prep && electron electron/main.js",
     "electron:build": "node scripts/electron-build.mjs"
   },
-  "dependencies": {
-    "electron-updater": "^6.1.1"
-  },
+  "dependencies": {},
   "optionalDependencies": {
     "electron": "^27.0.0",
-    "electron-builder": "^24.6.4"
+    "electron-builder": "^24.6.4",
+    "electron-updater": "^6.1.1"
   },
   "build": {
     "appId": "com.yourname.pacmanredux",

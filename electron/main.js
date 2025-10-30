@@ -2,7 +2,20 @@ import { app, BrowserWindow } from 'electron';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { existsSync } from 'node:fs';
-import { autoUpdater } from 'electron-updater';
+let autoUpdaterPromise;
+let autoUpdaterRegistered = false;
+
+function getAutoUpdater() {
+  if (!autoUpdaterPromise) {
+    autoUpdaterPromise = import('electron-updater')
+      .then((mod) => mod.autoUpdater)
+      .catch((error) => {
+        console.warn('electron-updater unavailable:', error?.message ?? error);
+        return null;
+      });
+  }
+  return autoUpdaterPromise;
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,11 +44,31 @@ function resolveIconPath() {
 
 let mainWindow;
 
-autoUpdater.on('update-downloaded', () => {
-  if (mainWindow) {
-    mainWindow.webContents.send('update-downloaded');
+async function setupAutoUpdater() {
+  const updater = await getAutoUpdater();
+  if (!updater) {
+    return;
   }
-});
+
+  if (!autoUpdaterRegistered) {
+    updater.on('update-downloaded', () => {
+      if (mainWindow) {
+        mainWindow.webContents.send('update-downloaded');
+      }
+    });
+    autoUpdaterRegistered = true;
+  }
+
+  if (app.isPackaged) {
+    try {
+      await updater.checkForUpdatesAndNotify();
+    } catch (error) {
+      console.warn('Auto-update check failed:', error);
+    }
+  } else {
+    console.log('Skipping autoUpdater in dev mode');
+  }
+}
 
 function resolveEntryPath() {
   const projectRoot = path.join(__dirname, '..');
@@ -79,11 +112,9 @@ function createWindow() {
 
 app.whenReady().then(() => {
   createWindow();
-  if (app.isPackaged) {
-    autoUpdater.checkForUpdatesAndNotify().catch((error) => {
-      console.warn('Auto-update check failed:', error);
-    });
-  }
+  setupAutoUpdater().catch((error) => {
+    console.warn('Failed to set up auto-updater:', error);
+  });
 });
 
 app.on('activate', () => {
