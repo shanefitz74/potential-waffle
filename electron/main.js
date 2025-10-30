@@ -7,6 +7,28 @@ import { autoUpdater } from 'electron-updater';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+function resolveIconPath() {
+  const candidates = [
+    path.join(__dirname, 'resources', 'icon.png'),
+    path.join(__dirname, 'resources', 'icon-512.png'),
+    path.join(__dirname, 'resources', 'icon-256.png'),
+  ];
+
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+  }
+
+  const projectRoot = path.join(__dirname, '..');
+  const legacyAsset = path.join(projectRoot, 'assets', 'images', 'icon.png');
+  if (existsSync(legacyAsset)) {
+    return legacyAsset;
+  }
+
+  return undefined;
+}
+
 let mainWindow;
 
 autoUpdater.on('update-downloaded', () => {
@@ -25,7 +47,7 @@ function resolveEntryPath() {
 }
 
 function createWindow() {
-  mainWindow = new BrowserWindow({
+  const windowOptions = {
     width: 800,
     height: 900,
     minWidth: 640,
@@ -36,8 +58,14 @@ function createWindow() {
       nodeIntegration: false,
       sandbox: true,
     },
-    icon: path.join(__dirname, '../assets/images/icon.png'),
-  });
+  };
+
+  const iconPath = resolveIconPath();
+  if (iconPath) {
+    windowOptions.icon = iconPath;
+  }
+
+  mainWindow = new BrowserWindow(windowOptions);
 
   const entryPath = resolveEntryPath();
   mainWindow.loadFile(entryPath).catch((error) => {
