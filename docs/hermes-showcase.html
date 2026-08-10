@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hermes Agent + Agent Reach — Internet-Scale Research</title>
+<style>
+  :root{
+    --bg:#0b0f1a; --panel:#121a2b; --panel2:#0f1626; --ink:#e8eefc;
+    --muted:#9fb0d0; --accent:#4f9dff; --accent2:#37e0c8; --line:#22304d;
+    --ok:#37e0c8; --warn:#ffd166;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.6 ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial;
+    background:radial-gradient(1200px 600px at 80% -10%,#16223c 0%,var(--bg) 55%);
+    color:var(--ink);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:980px;margin:0 auto;padding:48px 22px 80px}
+  header h1{font-size:clamp(28px,5vw,46px);margin:0 0 8px;letter-spacing:-.5px}
+  .grad{background:linear-gradient(90deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);font-size:18px;margin:0 0 28px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:28px 0}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
+    border-radius:14px;padding:20px}
+  .card h3{margin:0 0 6px;font-size:19px}
+  .card p{margin:0;color:var(--muted);font-size:15px}
+  .tag{display:inline-block;font-size:12px;color:var(--accent2);border:1px solid var(--line);
+    border-radius:999px;padding:2px 10px;margin-bottom:10px}
+  h2{margin:46px 0 6px;font-size:26px}
+  .lead{color:var(--muted);margin:0 0 18px}
+  table{width:100%;border-collapse:collapse;background:var(--panel2);border:1px solid var(--line);
+    border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);font-size:15px}
+  th{background:#0d1424;color:var(--muted);font-weight:600}
+  tr:last-child td{border-bottom:0}
+  .pill{font-size:12px;padding:2px 9px;border-radius:999px;font-weight:600}
+  .pill.ok{background:rgba(55,224,200,.12);color:var(--ok);border:1px solid rgba(55,224,200,.35)}
+  .pill.warn{background:rgba(255,209,102,.12);color:var(--warn);border:1px solid rgba(255,209,102,.35)}
+  .pill.no{background:rgba(255,107,107,.12);color:#ff8a8a;border:1px solid rgba(255,107,107,.35)}
+  code{background:#0d1424;border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:14px}
+  pre{background:#0d1424;border:1px solid var(--line);border-radius:10px;padding:14px;overflow:auto;font-size:14px}
+  a{color:var(--accent)}
+  footer{margin-top:54px;color:var(--muted);font-size:14px;border-top:1px solid var(--line);padding-top:18px}
+  .badge{display:inline-block;margin-right:8px;font-size:13px;color:var(--ink);
+    background:#0d1424;border:1px solid var(--line);border-radius:8px;padding:5px 10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span class="grad">Hermes Agent</span> + <span class="grad">Agent Reach</span></h1>
+    <p class="sub">A CLI AI agent with eyes on the entire internet — search and read 15+ platforms from the terminal.</p>
+    <div>
+      <span class="badge">⚡ Tencent/Hermes CLI</span>
+      <span class="badge">🔭 agent-reach research layer</span>
+      <span class="badge">🐦 Live X posting via twitter-cli</span>
+    </div>
+  </header>
+
+  <section class="cards">
+    <div class="card">
+      <span class="tag">AGENT</span>
+      <h3>Hermes Agent</h3>
+      <p>A terminal-native AI agent (by Nous Research) with tools for shell, files, web, browser, code, and subagents. Drives the desktop in the background, runs skills, and finishes jobs with real tool output.</p>
+    </div>
+    <div class="card">
+      <span class="tag">REACH</span>
+      <h3>Agent Reach</h3>
+      <p>Gives the agent internet-scale research: YouTube, RSS, V2EX, Bilibili, any web page (Jina Reader), full-web semantic search (Exa), GitHub, and Twitter/X — 15 channels total.</p>
+    </div>
+    <div class="card">
+      <span class="tag">X</span>
+      <h3>Post from the CLI</h3>
+      <p>Authenticated via twitter-cli with a Cookie-Editor export. Reads timelines, pulls tweets, and publishes new posts directly to a verified X account — no browser needed.</p>
+    </div>
+  </section>
+
+  <h2>Verified channel status</h2>
+  <p class="lead">Live status captured during setup (doctor + real calls):</p>
+  <table>
+    <thead><tr><th>Channel</th><th>State</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>YouTube</td><td><span class="pill ok">LIVE</span></td><td>Info, subtitles, audio transcription</td></tr>
+      <tr><td>Any web page</td><td><span class="pill ok">LIVE</span></td><td>Jina Reader (r.jina.ai)</td></tr>
+      <tr><td>RSS / Atom</td><td><span class="pill ok">LIVE</span></td><td>Feed reading</td></tr>
+      <tr><td>V2EX</td><td><span class="pill ok">LIVE</span></td><td>Fixed stale CA store via SSL_CERT_FILE → certifi</td></tr>
+      <tr><td>Bilibili</td><td><span class="pill ok">LIVE</span></td><td>Search API (curl direct)</td></tr>
+      <tr><td>GitHub</td><td><span class="pill ok">LIVE</span></td><td>gh authed as shanefitz74</td></tr>
+      <tr><td>Exa</td><td><span class="pill warn">CONFIG</span></td><td>Full-web semantic search, returns live results</td></tr>
+      <tr><td>Twitter/X</td><td><span class="pill warn">CONFIG</span></td><td>Reads live; keyword search flaky in twitter-cli</td></tr>
+      <tr><td>Reddit / Facebook / IG / XHS / Xiaoyuzhou / Xueqiu / LinkedIn</td><td><span class="pill no">OPTIONAL</span></td><td>Unlockable on request</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Try it</h2>
+  <p class="lead">Agent Reach health check from the terminal:</p>
+  <pre>agent-reach doctor</pre>
+  <p class="lead">Post to X from the CLI (authenticated):</p>
+  <pre>twitter post "Shipped a Hermes + Agent Reach showcase"</pre>
+
+  <h2>How this page was made</h2>
+  <p class="lead">Built as a single self-contained HTML file, pushed to a GitHub repo, published with GitHub Pages, and announced on X — all from the terminal by the Hermes agent.</p>
+
+  <footer>
+    <div>Built by <strong>Hermes Agent</strong> (operator: Shane / <a href="https://x.com/shanefitz74fitz">@shanefitz74fitz</a>).</div>
+    <div style="margin-top:8px">Source: github.com/shanefitz74/potential-waffle (docs/hermes-showcase.html)</div>
+  </footer>
+</div>
+</body>
+</html>
